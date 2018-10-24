@@ -9,11 +9,11 @@ int dadoR;
 int estado = 0;
 unsigned long tempo1;
 unsigned long tempo2=0;
-int chave[] = {7, 8, 9, 10};
+int chave[] = {8, 9, 10, 11};
 
 void interrupt() {
   tempo1 = millis();
-  if((tempo1 - tempo2) > 200){
+  if((tempo1 - tempo2) > 250){
   tempo2 = tempo1;
   Serial.println("entrei");
   estado = !estado;
@@ -22,15 +22,22 @@ void interrupt() {
   }
 }
 void setup() {
-   
+   Serial.begin(9600);
   for (int i = 0; i < 4; i++) {
     pinMode(chave[i], INPUT_PULLUP);
   }
-  for (int i = 0; i < 4; i++) {
-    if (digitalRead(chave[i])) {
-      dado += pow(2, i);
+  if (!digitalRead(chave[0])) {
+      dado += 1;
     }
-  }
+ if (!digitalRead(chave[1])) {
+      dado += 2;
+    }
+   if (!digitalRead(chave[2])) {
+      dado += 4;
+    }
+     if (!digitalRead(chave[3])) {
+      dado += 8;
+    }
 
   // delay para estabilizacao do Sinal
   delay(500);
@@ -47,26 +54,20 @@ void setup() {
 
 
 void loop() {
+
   //Quado estiver sinal disponivel
   if (mySwitch.available()) {
     Serial.println(dado);
-    //dado =  mySwitch.getReceivedValue();
+    dadoR =  mySwitch.getReceivedValue();
+    Serial.println(dadoR);
     //recebe na variavel value o Status
     if ( dadoR == dado) {
       estado = !estado;
     }
-    delay(100); 
   digitalWrite(7, estado);
-  
   delay(150);
   mySwitch.resetAvailable();
   }
  
 
 }
-
-
-
-
-
-//========================================
